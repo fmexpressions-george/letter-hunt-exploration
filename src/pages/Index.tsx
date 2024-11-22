@@ -24,8 +24,13 @@ const Index = () => {
 
   const wrongGuesses = [...guessedLetters].filter(letter => !word.includes(letter)).length;
 
+  const getRandomWord = (selectedCategory: keyof typeof WORDS) => {
+    const words = WORDS[selectedCategory];
+    return words[Math.floor(Math.random() * words.length)];
+  };
+
   const initializeGame = useCallback(() => {
-    const newWord = WORDS[category][Math.floor(Math.random() * WORDS[category].length)];
+    const newWord = getRandomWord(category);
     setWord(newWord);
     setGuessedLetters(new Set());
     setCorrectLetters(new Set());
@@ -35,6 +40,11 @@ const Index = () => {
   useEffect(() => {
     initializeGame();
   }, [initializeGame]);
+
+  const handleCategoryChange = (newCategory: keyof typeof WORDS) => {
+    setCategory(newCategory);
+    setGameOver(true); // This will trigger a new game through the useEffect
+  };
 
   const onGuess = (letter: string) => {
     const newGuessedLetters = new Set(guessedLetters).add(letter);
@@ -76,8 +86,7 @@ const Index = () => {
             <Button
               key={cat}
               variant={category === cat ? "default" : "outline"}
-              onClick={() => setCategory(cat)}
-              disabled={!gameOver}
+              onClick={() => handleCategoryChange(cat)}
             >
               {cat}
             </Button>
